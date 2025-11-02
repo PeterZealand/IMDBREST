@@ -5,22 +5,20 @@ public record TitleRecord(int? Id,int? TypeId, string? PrimaryTitle, string? Ori
 
 public static class RecordHelper {
     public static Title ConvertTitleRecord(TitleRecord record) {
+        Console.WriteLine(record);
         if (record.PrimaryTitle == null) {
             throw new ArgumentNullException("" + record.PrimaryTitle);
         }
-        if(record.Genres == null){
-            throw new ArgumentNullException("" + record.Genres);
-        }
         return new Title {
-            Id = record.Id,
-            TypeId = record.TypeId,
-            PrimaryTitle = record.PrimaryTitle,
-            OriginalTitle = record.OriginalTitle,
+            Id = record.Id ?? null,
+            TypeId = record.TypeId ?? null,
+            PrimaryTitle = record.PrimaryTitle ?? null,
+            OriginalTitle = record.OriginalTitle ?? null,
             IsAdult = record.IsAdult,
-            StartYear = record.StartYear,
-            EndYear = record.EndYear,
-            RuntimeMinutes = record.RuntimeMinutes,
-            Genres = record.Genres
+            StartYear = record.StartYear ?? null,
+            EndYear = record.EndYear ?? null,
+            RuntimeMinutes = record.RuntimeMinutes ?? null,
+            Genres = record.Genres ?? null
         };
     }
 }

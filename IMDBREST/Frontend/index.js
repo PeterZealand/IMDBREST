@@ -34,11 +34,11 @@ const app = Vue.createApp({
                 typeId:null,
                 primaryTitle:null,
                 originalTitle:null,
-                titleType:null,
+                titleType: null,
                 isAdult:null,
-                startYear:null,
-                endYear:null,
-                runtimeMinutes:null,
+                startYear: null,
+                endYear: null,
+                runtimeMinutes: null,
                 genres:[]
             },
             startCreateNewTitle:false,
@@ -213,8 +213,7 @@ const app = Vue.createApp({
 
             try{
                 const res = await axios.post(titlesUrl,newTitle)
-                window.alert(res.data)
-                console.log("Title inserted",res.data)
+                window.alert("Title inserted")
             }
             catch(error){
                 if(error.response){
@@ -229,6 +228,8 @@ const app = Vue.createApp({
                     console.error("Request setup error:",error.message)
                 }
             }
+
+            // location.reload()
         },
     },
 });

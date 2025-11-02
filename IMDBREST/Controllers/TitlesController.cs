@@ -45,23 +45,29 @@ namespace IMDBFrontend {
 
         // POST api/<IMDBController>
         [HttpPost]
-        public void Post([FromBody] TitleRecord value) {
-            SqlConnection sqlConn = new(conString);
-            sqlConn.Open();
-            SqlTransaction sqlTrans = sqlConn.BeginTransaction();
-            Console.WriteLine(value);
+        public ActionResult<Title> Post([FromBody] TitleRecord value) {
+            using SqlConnection sqlConn = new(conString);
 
             try{
+                sqlConn.Open();
+
+                using SqlTransaction sqlTrans = sqlConn.BeginTransaction();
+
                 Title? converted = RecordHelper.ConvertTitleRecord(value);
+                Console.WriteLine(converted);
+
                 InsertTitle(converted,sqlConn,sqlTrans);
-                InsertTitleGenre(converted,sqlConn,sqlTrans);
+
+                if(converted.Genres.Count > 0){
+                    InsertTitleGenre(converted,sqlConn,sqlTrans);
+                }
+                sqlTrans.Commit();
+
+                return Created("/"+converted.Id,converted);
             }
             catch(Exception){
+                return BadRequest();
             }
-
-            sqlTrans.Commit();
-            sqlTrans.Dispose();
-            sqlConn.Close();
         }
 
         // PUT api/<IMDBController>/5
@@ -107,13 +113,15 @@ namespace IMDBFrontend {
                 "(@typeId,@primarytitle,@originalTitle,@isAdult,@startYear,@endYear,@runtimeMinutes)";
 
             SqlCommand cmd = new(insert,conn,trans);
-            cmd.Parameters.AddWithValue("@typeId",title.TypeId);
+            if(title.TypeId != null){
+                cmd.Parameters.AddWithValue("@typeId",(object?)title.TypeId ?? DBNull.Value);
+            }
             cmd.Parameters.AddWithValue("@primarytitle",title.PrimaryTitle);
-            cmd.Parameters.AddWithValue("@originalTitle",title.OriginalTitle);
+            cmd.Parameters.AddWithValue("@originalTitle",(object?)title.OriginalTitle ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@isAdult",title.IsAdult);
-            cmd.Parameters.AddWithValue("@startYear",title.StartYear);
-            cmd.Parameters.AddWithValue("@endYear",title.EndYear);
-            cmd.Parameters.AddWithValue("@runtimeMinutes",title.RuntimeMinutes);
+            cmd.Parameters.AddWithValue("@startYear",(object?)title.StartYear ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@endYear",(object?)title.EndYear ?? DBNull.Value);
+            cmd.Parameters.AddWithValue("@runtimeMinutes",(object?)title.RuntimeMinutes ?? DBNull.Value);
 
             cmd.ExecuteScalar();
         }
