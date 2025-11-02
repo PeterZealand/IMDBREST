@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -14,6 +13,7 @@
             crossorigin="anonymous"
         />
         <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     </head>
     <body>
         <div id="app" class="container py-4">
@@ -21,89 +21,151 @@
 
             <div class="row g-4">
                 <!-- Titles search -->
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-header">Search Titles</div>
-                        <div class="card-body">
-                            <div class="input-group mb-3">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Type a title (min. 2 characters)"
-                                    v-model.trim="search.titles"
-                                    @input="onInputTitles"
-                                />
-                                <button class="btn btn-primary" type="button" @click="searchTitles(true)" :disabled="search.titles.length < 2">
-                                    Search
-                                </button>
-                                <button class="btn btn-outline-secondary" type="button" @click="clearTitles" :disabled="!search.titles && results.titles.length===0">
-                                    Clear
-                                </button>
-                            </div>
+                <div>
+                    <div class="col-12 col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-header">Search Titles</div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Type a title (min. 2 characters)"
+                                        v-model.trim="search.titles"
+                                        @input="onInputTitles"
+                                    />
+                                    <button class="btn btn-primary" type="button" @click="searchTitles(true)" :disabled="search.titles.length < 2">
+                                        Search
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" @click="clearTitles" :disabled="!search.titles && results.titles.length===0">
+                                        Clear
+                                    </button>
+                                </div>
 
-                            <div v-if="loading.titles" class="text-secondary mb-2">
-                                <span class="spinner-border spinner-border-sm"></span>
-                                Loading...
-                            </div>
-                            <div v-if="error.titles" class="alert alert-danger py-2">
-                                {{ error.titles }}
-                            </div>
-                            <div v-if="!loading.titles && !error.titles">
-                                <p v-if="results.titles.length > 0" class="text-muted">
-                                    Found {{ results.titles.length }} title(s)
-                                </p>
-                                <p v-else-if="search.titles.length >= 2" class="text-muted">No results</p>
-                                <ul class="list-group">
-                                    <li v-for="(t, idx) in results.titles" :key="'t-'+idx" class="list-group-item">
-                                        {{ t }}
-                                    </li>
-                                </ul>
+                                <div v-if="loading.titles" class="text-secondary mb-2">
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                    Loading...
+                                </div>
+                                <div v-if="error.titles" class="alert alert-danger py-2">
+                                    {{ error.titles }}
+                                </div>
+                                <div v-if="!loading.titles && !error.titles">
+                                    <p v-if="results.titles.length > 0" class="text-muted">
+                                        Found {{ results.titles.length }} title(s)
+                                    </p>
+                                    <p v-else-if="search.titles.length >= 2" class="text-muted">No results</p>
+                                    <ul class="list-group">
+                                        <li v-for="(t, idx) in results.titles" :key="'t-'+idx" class="list-group-item">
+                                            {{ t }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <button @click="startCreateNewTitleMethod">Create New Title</button>
+                <div v-if="startCreateNewTitle">
+                    <h5>
+                        Insert Title
+                    </h5>
+                    <div class="col-2">
+                        Primary Title:
+                        <input type="text" v-model="title.primaryTitle" placeholder="Primary Title">
 
-                <!-- Actors search -->
-                <div class="col-12 col-lg-6">
-                    <div class="card h-100">
-                        <div class="card-header">Search Actors</div>
-                        <div class="card-body">
-                            <div class="input-group mb-3">
-                                <input
-                                    type="text"
-                                    class="form-control"
-                                    placeholder="Type an actor name (min. 2 characters)"
-                                    v-model.trim="search.actors"
-                                    @input="onInputActors"
-                                />
-                                <button class="btn btn-primary" type="button" @click="searchActors(true)" :disabled="search.actors.length < 2">
-                                    Search
-                                </button>
-                                <button class="btn btn-outline-secondary" type="button" @click="clearActors" :disabled="!search.actors && results.actors.length===0">
-                                    Clear
-                                </button>
-                            </div>
+                        Original Title:
+                        <input type="text" v-model="title.originalTitle" placeholder="Original Title">
 
-                            <div v-if="loading.actors" class="text-secondary mb-2">
-                                <span class="spinner-border spinner-border-sm"></span>
-                                Loading...
-                            </div>
-                            <div v-if="error.actors" class="alert alert-danger py-2">
-                                {{ error.actors }}
-                            </div>
-                            <div v-if="!loading.actors && !error.actors">
-                                <p v-if="results.actors.length > 0" class="text-muted">
-                                    Found {{ results.actors.length }} actor(s)
-                                </p>
-                                <p v-else-if="search.actors.length >= 2" class="text-muted">No results</p>
-                                <ul class="list-group">
-                                    <li v-for="(a, idx) in results.actors" :key="'a-'+idx" class="list-group-item">
-                                        {{ a }}
-                                    </li>
-                                </ul>
+                        Title Type:
+                        <select v-model="title.titleType" @click="getTypeId">
+                            <option disabled value="">Select A Title Type</option>
+                            <option v-for="titleType in titleTypes" > {{titleType}}</option>
+                        </select>
+                        <br>
+
+                        Is Adult:
+                        <select v-model="title.isAdult">
+                            <option value="false">False</option>
+                            <option value="true">True</option>
+                        </select>
+
+                        Start Year:
+                        <input type="number" v-model="title.startYear" placeholder="Start Year">
+
+                        End Year:
+                        <input type="number" v-model="title.endYear" placeholder="End Year">
+
+                        Runtime Minutes:
+                        <input type="number" v-model="title.runtimeMinutes" placeholder="Runtime Minutes">
+
+                        Genre(s):
+                        <br>
+                        <select v-model="title.genres" multiple>
+                            <option disabled value="">Select Multiple</option>
+                            <option v-for="genre in genres" > {{genre}}</option>
+                        </select>
+                    </div>
+                    <button @click="insertNewTitle">Add</button>
+
+                    <b></b>
+                </div>
+                {{title}}
+                <div>
+                    <!-- Actors search -->
+                    <div class="col-12 col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-header">Search Actors</div>
+                            <div class="card-body">
+                                <div class="input-group mb-3">
+                                    <input
+                                        type="text"
+                                        class="form-control"
+                                        placeholder="Type an actor name (min. 2 characters)"
+                                        v-model.trim="search.actors"
+                                        @input="onInputActors"
+                                    />
+                                    <button class="btn btn-primary" type="button" @click="searchActors(true)" :disabled="search.actors.length < 2">
+                                        Search
+                                    </button>
+                                    <button class="btn btn-outline-secondary" type="button" @click="clearActors" :disabled="!search.actors && results.actors.length===0">
+                                        Clear
+                                    </button>
+                                </div>
+
+                                <div v-if="loading.actors" class="text-secondary mb-2">
+                                    <span class="spinner-border spinner-border-sm"></span>
+                                    Loading...
+                                </div>
+                                <div v-if="error.actors" class="alert alert-danger py-2">
+                                    {{ error.actors }}
+                                </div>
+                                <div v-if="!loading.actors && !error.actors">
+                                    <p v-if="results.actors.length > 0" class="text-muted">
+                                        Found {{ results.actors.length }} actor(s)
+                                    </p>
+                                    <p v-else-if="search.actors.length >= 2" class="text-muted">No results</p>
+                                    <ul class="list-group">
+                                        <li v-for="(a, idx) in results.actors" :key="'a-'+idx" class="list-group-item">
+                                            {{ a }}
+                                        </li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <h5>
+                        Insert Actor
+                    </h5>
+                    <div class="">
+                        PrimaryName:
+                        <input type="text" v-model="actor.primaryName" placeholder="Name">
+                        BirthYear
+                        <input type="date" v-model="actor.birthYear" placeholder="BirthYear">
+                        DeathYear
+                        <input type="date" v-model="actor.deathYear" placeholder="DeathYear">
+                    </div>
+                    {{actor}}
                 </div>
             </div>
         </div>
