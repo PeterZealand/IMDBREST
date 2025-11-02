@@ -204,7 +204,7 @@ const app = Vue.createApp({
                 typeId: this.title.typeId,
                 primaryTitle: this.title.primaryTitle,
                 originalTitle: this.title.originalTitle,
-                isAdult: this.title.isAdult,
+                isAdult: String(this.title.isAdult).toLowerCase() === 'true',
                 startYear: this.title.startYear,
                 endYear: this.title.endYear,
                 runtimeMinutes: this.title.runtimeMinutes,
@@ -217,7 +217,17 @@ const app = Vue.createApp({
                 console.log("Title inserted",res.data)
             }
             catch(error){
-                console.log("Could not insert",error)
+                if(error.response){
+                    console.error("400 Error Details:",error.response.data)
+                    console.error("Status:",error.response.status)
+                    window.alert("Insertion failed. Check console for details. Server message: "+JSON.stringify(error.response.data))
+                }
+                else if(error.request){
+                    console.error("No response receieved:",error.request)
+                }
+                else{
+                    console.error("Request setup error:",error.message)
+                }
             }
         },
     },

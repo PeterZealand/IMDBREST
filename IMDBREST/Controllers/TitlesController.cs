@@ -47,8 +47,9 @@ namespace IMDBFrontend {
         [HttpPost]
         public void Post([FromBody] TitleRecord value) {
             SqlConnection sqlConn = new(conString);
-            SqlTransaction sqlTrans = sqlConn.BeginTransaction();
             sqlConn.Open();
+            SqlTransaction sqlTrans = sqlConn.BeginTransaction();
+            Console.WriteLine(value);
 
             try{
                 Title? converted = RecordHelper.ConvertTitleRecord(value);
