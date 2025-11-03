@@ -3,6 +3,10 @@ const app = Vue.createApp({
         return {
             apiBase: "http://localhost:5041",
 
+            pagination:{
+                currentPage:1,
+                perPage: 35
+            },
             search: {
                 titles: "",
                 actors: "",
@@ -30,20 +34,6 @@ const app = Vue.createApp({
                 birhtYear:null,
                 deathYear:null,
             },
-            title:{
-                typeId:null,
-                primaryTitle:null,
-                originalTitle:null,
-                titleType: null,
-                isAdult:null,
-                startYear: null,
-                endYear: null,
-                runtimeMinutes: null,
-                genres:[]
-            },
-            startCreateNewTitle:false,
-            titleTypes:[],
-            genres:[],
         };
     },
     async created(){
@@ -158,78 +148,12 @@ const app = Vue.createApp({
             this.error.actors = "";
             clearTimeout(this.debouncers.actors);
         },
-        async getTitleTypes(){
-            try{
-                const url = this.buildUrl(`/api/TitleTypes/`)
-                const resp = await fetch(url,{method:"GET"})
-                const data = await resp.json()
-                this.titleTypes = Array.isArray(data) ? data : []
-            }
-            catch(error){
-            }
-        },
-        async getGenres(){
-            try{
-                const url = this.buildUrl(`/api/Genres/`)
-                const resp = await fetch(url,{method:"GET"})
-                const data = await resp.json()
-                this.genres = Array.isArray(data) ? data : []
-            }
-            catch(error){
-            }
-        },
         startCreateNewTitleMethod(){
-            this.startCreateNewTitle = !this.startCreateNewTitle
-
-            if(this.startCreateNewTitle){
-                this.getTitleTypes()
-                this.getGenres()
-            }
+            location.href = "./createNewTitlePage.html"
         },
-        async getTypeId(){
-            try{
-                titleTypesUrl = this.buildUrl(`/api/TitleTypes/`)
-                const getTypeId = await axios.get(titleTypesUrl + `Name?titleName=${this.title.titleType}`)
-                console.log(getTypeId.data)
-                this.title.typeId = getTypeId.data
-            }
-            catch(error){
-            }
-        },
-        async insertNewTitle(){
-            titlesUrl = this.buildUrl(`/api/Titles/`)
 
-            newTitle = {
-                id: 0,
-                typeId: this.title.typeId,
-                primaryTitle: this.title.primaryTitle,
-                originalTitle: this.title.originalTitle,
-                isAdult: String(this.title.isAdult).toLowerCase() === 'true',
-                startYear: this.title.startYear,
-                endYear: this.title.endYear,
-                runtimeMinutes: this.title.runtimeMinutes,
-                genres: this.genres
-            }
-
-            try{
-                const res = await axios.post(titlesUrl,newTitle)
-                window.alert("Title inserted")
-            }
-            catch(error){
-                if(error.response){
-                    console.error("400 Error Details:",error.response.data)
-                    console.error("Status:",error.response.status)
-                    window.alert("Insertion failed. Check console for details. Server message: "+JSON.stringify(error.response.data))
-                }
-                else if(error.request){
-                    console.error("No response receieved:",error.request)
-                }
-                else{
-                    console.error("Request setup error:",error.message)
-                }
-            }
-
-            // location.reload()
+        async getMoreInfo(title){
+            location.href = './title.html'
         },
     },
 });

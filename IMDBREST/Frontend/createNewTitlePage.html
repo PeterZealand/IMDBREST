@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <title>New Title</title>
+    </head>
+    <body>
+        <div id="createNewTitle" class="container">
+            <h5>
+                Insert Title
+            </h5>
+            <div class="col-2">
+                Primary Title (Required):
+                <input type="text" v-model="title.primaryTitle" placeholder="Primary Title">
+
+                Original Title:
+                <input type="text" v-model="title.originalTitle" placeholder="Original Title">
+
+                Title Type:
+                <select v-model="title.titleType" @click="getTypeId">
+                    <option disabled value="">Select A Title Type</option>
+                    <option v-for="titleType in titleTypes" > {{titleType}}</option>
+                </select>
+                <br>
+
+                Is Adult (Required):
+                <select v-model="title.isAdult">
+                    <option value="false">False</option>
+                    <option value="true">True</option>
+                </select>
+                <br>
+
+                Start Year:
+                <input type="number" v-model="title.startYear" placeholder="Start Year">
+
+                End Year:
+                <input type="number" v-model="title.endYear" placeholder="End Year">
+
+                Runtime Minutes:
+                <input type="number" v-model="title.runtimeMinutes" placeholder="Runtime Minutes">
+
+                Genre(s):
+                <br>
+                <select v-model="title.genres" multiple>
+                    <option disabled value="">Select Multiple</option>
+                    <option v-for="genre in genres" > {{genre}}</option>
+                </select>
+            </div>
+            <button @click="insertNewTitle">Add</button>
+
+            <br><br>
+            {{title}}
+            <div>
+                <h5>Add Crew</h5>
+                <div class="col-2">
+                    Director(s):
+                </div>
+            </div>
+        </div>
+
+        <script src="createNewTitlePage.js"></script>
+    </body>
+</html>

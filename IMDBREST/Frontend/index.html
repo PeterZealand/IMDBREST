@@ -57,6 +57,7 @@
                                     <ul class="list-group">
                                         <li v-for="(t, idx) in results.titles" :key="'t-'+idx" class="list-group-item">
                                             {{ t }}
+                                            <button @click="getMoreInfo(t)">More info</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -65,51 +66,6 @@
                     </div>
                 </div>
                 <button @click="startCreateNewTitleMethod">Create New Title</button>
-                <div v-if="startCreateNewTitle">
-                    <h5>
-                        Insert Title
-                    </h5>
-                    <div class="col-2">
-                        Primary Title:
-                        <input type="text" v-model="title.primaryTitle" placeholder="Primary Title">
-
-                        Original Title:
-                        <input type="text" v-model="title.originalTitle" placeholder="Original Title">
-
-                        Title Type:
-                        <select v-model="title.titleType" @click="getTypeId">
-                            <option disabled value="">Select A Title Type</option>
-                            <option v-for="titleType in titleTypes" > {{titleType}}</option>
-                        </select>
-                        <br>
-
-                        Is Adult:
-                        <select v-model="title.isAdult">
-                            <option value="false">False</option>
-                            <option value="true">True</option>
-                        </select>
-
-                        Start Year:
-                        <input type="number" v-model="title.startYear" placeholder="Start Year">
-
-                        End Year:
-                        <input type="number" v-model="title.endYear" placeholder="End Year">
-
-                        Runtime Minutes:
-                        <input type="number" v-model="title.runtimeMinutes" placeholder="Runtime Minutes">
-
-                        Genre(s):
-                        <br>
-                        <select v-model="title.genres" multiple>
-                            <option disabled value="">Select Multiple</option>
-                            <option v-for="genre in genres" > {{genre}}</option>
-                        </select>
-                    </div>
-                    <button @click="insertNewTitle">Add</button>
-
-                    <b></b>
-                </div>
-                {{title}}
                 <div>
                     <!-- Actors search -->
                     <div class="col-12 col-lg-6">
