@@ -57,7 +57,7 @@
                                     <ul class="list-group">
                                         <li v-for="(t, idx) in results.titles" :key="'t-'+idx" class="list-group-item">
                                             {{ t }}
-                                            <button @click="getMoreInfo(t)">More info</button>
+                                            <button @click="getMoreInfoTitle(t)">More info</button>
                                         </li>
                                     </ul>
                                 </div>
@@ -65,7 +65,9 @@
                         </div>
                     </div>
                 </div>
-                <button @click="startCreateNewTitleMethod">Create New Title</button>
+                <div class="container">
+                    <button class="btn btn-primary" @click="startCreateNewTitleMethod">Create New Title</button>
+                </div>
                 <div>
                     <!-- Actors search -->
                     <div class="col-12 col-lg-6">
@@ -103,25 +105,17 @@
                                     <ul class="list-group">
                                         <li v-for="(a, idx) in results.actors" :key="'a-'+idx" class="list-group-item">
                                             {{ a }}
+                                            <button @click="getMoreInfoActor(a)">More info</button>
                                         </li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <h5>
-                        Insert Actor
-                    </h5>
-                    <div class="">
-                        PrimaryName:
-                        <input type="text" v-model="actor.primaryName" placeholder="Name">
-                        BirthYear
-                        <input type="date" v-model="actor.birthYear" placeholder="BirthYear">
-                        DeathYear
-                        <input type="date" v-model="actor.deathYear" placeholder="DeathYear">
-                    </div>
-                    {{actor}}
+                </div>
+                <br>
+                <div class="container">
+                    <button class="btn btn-primary" @click="startCreateNewActorMethod">Create New Actor</button>
                 </div>
             </div>
         </div>

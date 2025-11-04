@@ -13,6 +13,7 @@
             <h5>
                 Insert Title
             </h5>
+            <button class="btn btn-primary" @click="backToFront">Back</button>
             <div class="col-2">
                 Primary Title (Required):
                 <input type="text" v-model="title.primaryTitle" placeholder="Primary Title">
@@ -50,7 +51,8 @@
                     <option v-for="genre in genres" > {{genre}}</option>
                 </select>
             </div>
-            <button @click="insertNewTitle">Add</button>
+            <br>
+            <button class="btn btn-primary" @click="insertNewTitle">Add</button>
 
             <br><br>
             {{title}}

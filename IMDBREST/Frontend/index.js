@@ -151,11 +151,19 @@ const app = Vue.createApp({
         startCreateNewTitleMethod(){
             location.href = "./createNewTitlePage.html"
         },
+        startCreateNewActorMethod(){
+            location.href = "./createNewActorPage.html"
+        },
 
-        async getMoreInfo(title){
+        async getMoreInfoTitle(title){
             const encodedTitle = encodeURIComponent(title)
 
             location.href = './title.html?title=' + encodedTitle
+        },
+        async getMoreInfoActor(actor){
+            const encodedActor = encodeURIComponent(actor)
+
+            location.href = './actor.html?actor=' + encodedActor
         },
     },
 });

@@ -100,9 +100,17 @@ Vue.createApp({
             // location.reload()
         },
         async searchDirector(){
-            directorsUrl = this.buildUrl(`/api/Names/`)
-            const getD = await axios.get(directorsUrl + `DirectorName?name=${this.searchTerm}`)
-            this.foundDirector = getD.data
+            try{
+                directorsUrl = this.buildUrl(`/api/Names/`)
+                const getD = await axios.get(directorsUrl + `DirectorName?name=${this.searchTerm}`)
+                this.foundDirector = getD.data
+            }
+            catch(error){
+                console.log(error)
+            }
+        },
+        backToFront(){
+            location.href = "./index.html"
         },
     }
 }).mount("#createNewTitle")
