@@ -17,8 +17,10 @@ Vue.createApp({
             startCreateNewTitle:false,
             titleTypes:[],
             genres:[],
+            searchTerm:null,
+            foundDirector:null,
             directors:[],
-            writers:[]
+            writers:[],
         }
     },
     async created(){
@@ -96,6 +98,11 @@ Vue.createApp({
             }
 
             // location.reload()
+        },
+        async searchDirector(){
+            directorsUrl = this.buildUrl(`/api/Names/`)
+            const getD = await axios.get(directorsUrl + `DirectorName?name=${this.searchTerm}`)
+            this.foundDirector = getD.data
         },
     }
 }).mount("#createNewTitle")

@@ -1,0 +1,1 @@
+select Res.Id from GetNameByProfession('actor') as Res inner join Principals on Res.Id = Principals.NameId inner join titles on Principals.TitleId = titles.Id where titles.PrimaryTitle = 'Pirates of the Caribbean'

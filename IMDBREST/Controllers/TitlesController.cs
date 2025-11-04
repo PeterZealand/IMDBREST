@@ -53,17 +53,16 @@ namespace IMDBFrontend {
 
                 using SqlTransaction sqlTrans = sqlConn.BeginTransaction();
 
-                Title? converted = RecordHelper.ConvertTitleRecord(value);
-                Console.WriteLine(converted);
+                Title converted = RecordHelper.ConvertTitleRecord(value);
 
                 InsertTitle(converted,sqlConn,sqlTrans);
 
-                if(converted.Genres.Count > 0){
+                if(converted?.Genres?.Count > 0){
                     InsertTitleGenre(converted,sqlConn,sqlTrans);
                 }
                 sqlTrans.Commit();
 
-                return Created("/"+converted.Id,converted);
+                return Created("/"+converted?.Id,converted);
             }
             catch(Exception){
                 return BadRequest();

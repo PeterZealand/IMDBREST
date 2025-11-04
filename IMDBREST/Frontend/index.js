@@ -153,7 +153,9 @@ const app = Vue.createApp({
         },
 
         async getMoreInfo(title){
-            location.href = './title.html'
+            const encodedTitle = encodeURIComponent(title)
+
+            location.href = './title.html?title=' + encodedTitle
         },
     },
 });
