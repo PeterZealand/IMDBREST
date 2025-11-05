@@ -22,10 +22,11 @@
                 <input type="text" v-model="title.originalTitle" placeholder="Original Title">
 
                 Title Type:
-                <select v-model="title.titleType" @click="getTypeId">
+                <select v-model="selectedTitleType" @click="getTypeId">
                     <option disabled value="">Select A Title Type</option>
                     <option v-for="titleType in titleTypes" > {{titleType}}</option>
                 </select>
+                {{selectedTitleType}}
                 <br>
 
                 Is Adult (Required):

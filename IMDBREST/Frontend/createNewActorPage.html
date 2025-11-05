@@ -32,8 +32,13 @@
                 </select>
                 <br>
 
-                Known For Titles (Seperate With Comma):
-                <input type="number" v-model="actor.knownForTitles" placeholder="eg. Title1,Title2...">
+                Known For: <br>
+                Search for Title:
+                <input type="text" v-model="titleSearchTerm" @change="searchTitle" placeholder="eg. Humpty Dumpty...">
+                <select v-model="actor.knownForTitles" multiple>
+                    <option disabled value="">Select Multiple</option>
+                    <option v-for="title in titles"> {{title}}</option>
+                </select>
 
             </div>
             <br>

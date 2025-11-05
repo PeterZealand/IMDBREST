@@ -21,6 +21,7 @@ Vue.createApp({
             foundDirector:null,
             directors:[],
             writers:[],
+            selectedTitleType:null,
         }
     },
     async created(){
@@ -57,7 +58,7 @@ Vue.createApp({
         async getTypeId(){
             try{
                 titleTypesUrl = this.buildUrl(`/api/TitleTypes/`)
-                const getTypeId = await axios.get(titleTypesUrl + `Name?titleName=${this.title.titleType}`)
+                const getTypeId = await axios.get(titleTypesUrl + `Name?titleName=${this.selectedTitleType}`)
                 console.log(getTypeId.data)
                 this.title.typeId = getTypeId.data
             }
@@ -76,7 +77,7 @@ Vue.createApp({
                 startYear: this.title.startYear,
                 endYear: this.title.endYear,
                 runtimeMinutes: this.title.runtimeMinutes,
-                genres: this.genres
+                genres: this.title.genres
             }
 
             try{
@@ -97,6 +98,7 @@ Vue.createApp({
                 }
             }
 
+            location.href = "./index.html"
             // location.reload()
         },
         async searchDirector(){

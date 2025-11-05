@@ -17,8 +17,8 @@ namespace IMDBFrontend{
             return res;
         }
 
-        void GetNames(SqlConnection conn, SqlTransaction trans){
-            string query = "select primaryname from names"
+        void GetNames(SqlConnection conn){
+            string query = "select primaryname from names";
         }
     }
 }

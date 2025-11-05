@@ -8,20 +8,24 @@ namespace IMDBFrontend {
     public class TitlesController : ControllerBase {
         string? conString = Program.connectionString;
 
-        // [HttpGet]
-        // public ActionResult<List<object>> Get(){
-        //     try{
-        //         List<object> res = new();
-        //         SqlConnection sqlConn = new(conString);
-        //         sqlConn.Open();
-        //         res = GetTitles(sqlConn);
-        //         sqlConn.Close();
-        //         return Ok(res);
-        //     }
-        //     catch(Exception){
-        //     }
-        //     return NoContent();
-        // }
+        [HttpGet("Top")]
+        public ActionResult<List<object>> GetTop(int count,string titleName){
+            SqlConnection sqlConn = new(conString);
+            try{
+                List<object>? res = new();
+                sqlConn.Open();
+
+                res = GetTitleTop(count,titleName,sqlConn);
+                sqlConn.Close();
+
+                if(res?.Count <= 0) return NoContent();
+
+                return Ok(res);
+            }
+            catch(Exception ex){
+                return BadRequest(ex.Message);
+            }
+        }
 
         // GET api/<IMDBController>/5
         [HttpGet("Name")]
@@ -76,7 +80,29 @@ namespace IMDBFrontend {
 
         // DELETE api/<IMDBController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id) {
+        public ActionResult<Title> Delete(int id) {
+            using SqlConnection sqlConn = new(conString);
+
+            try{
+                sqlConn.Open();
+
+                using SqlTransaction sqlTrans = sqlConn.BeginTransaction();
+
+                // Title converted = RecordHelper.ConvertTitleRecord(value);
+                object ob = GetTitleById(id,sqlConn,sqlTrans);
+                RemoveTitle((int)ob,sqlConn,sqlTrans);
+
+                // InsertTitle(converted,sqlConn,sqlTrans);
+                //
+                // if(converted?.Genres?.Count > 0){
+                //     InsertTitleGenre(converted,sqlConn,sqlTrans);
+                sqlTrans.Commit();
+
+                return Ok(ob);
+            }
+            catch(Exception ex){
+                return BadRequest(ex.Message);
+            }
         }
 
         List<object> GetTitles(SqlConnection conn){
@@ -112,9 +138,7 @@ namespace IMDBFrontend {
                 "(@typeId,@primarytitle,@originalTitle,@isAdult,@startYear,@endYear,@runtimeMinutes)";
 
             SqlCommand cmd = new(insert,conn,trans);
-            if(title.TypeId != null){
-                cmd.Parameters.AddWithValue("@typeId",(object?)title.TypeId ?? DBNull.Value);
-            }
+            cmd.Parameters.AddWithValue("@typeId",(object?)title.TypeId ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@primarytitle",title.PrimaryTitle);
             cmd.Parameters.AddWithValue("@originalTitle",(object?)title.OriginalTitle ?? DBNull.Value);
             cmd.Parameters.AddWithValue("@isAdult",title.IsAdult);
@@ -145,7 +169,9 @@ namespace IMDBFrontend {
             foreach(string g in title.Genres){
                 string q = "select id from genres where genre = @genre";
                 SqlCommand getGenreId = new(q,conn,trans);
+
                 getGenreId.Parameters.AddWithValue("@genre",g);
+
                 int res = Convert.ToInt32(getGenreId.ExecuteScalar());
                 genreIds.Add(res);
             }
@@ -159,6 +185,60 @@ namespace IMDBFrontend {
             ge.Parameters.AddWithValue("@primaryTitle",title.PrimaryTitle);
             int titleId = Convert.ToInt32(ge.ExecuteScalar());
             return titleId;
+        }
+
+        object GetTitleById(int id, SqlConnection conn,SqlTransaction trans){
+            string getTitleId = "select * from titles where id = @id";
+            SqlCommand cmd = new(getTitleId,conn,trans);
+            cmd.Parameters.AddWithValue("@id",id);
+            return cmd.ExecuteScalar();
+        }
+
+        void RemoveTitle(int id, SqlConnection conn, SqlTransaction trans){
+            string removeTitleGenres = "delete from titlegenres where titleid = @id";
+            SqlCommand cmdTitleGenre = new(removeTitleGenres,conn,trans);
+            cmdTitleGenre.Parameters.AddWithValue("@id",id);
+            cmdTitleGenre.ExecuteNonQuery();
+
+            string removePrincipals = "delete from principals where titleid = @id";
+            SqlCommand cmdPrincipals = new(removePrincipals,conn,trans);
+            cmdPrincipals.Parameters.AddWithValue("@id",id);
+            cmdPrincipals.ExecuteNonQuery();
+
+            string removeCrewDirector = "delete from crewdirector where titleid = @id";
+            SqlCommand cmdCrewDirector = new(removeCrewDirector,conn,trans);
+            cmdCrewDirector.Parameters.AddWithValue("@id",id);
+            cmdCrewDirector.ExecuteNonQuery();
+
+            string removeCrewWriter = "delete from crewwriter where titleid = @id";
+            SqlCommand cmdCrewWriter = new(removeCrewWriter,conn,trans);
+            cmdCrewWriter.Parameters.AddWithValue("@id",id);
+            cmdCrewWriter.ExecuteNonQuery();
+
+            string removeNamesKnownFor = "delete from namesknownfor where titleid = @id";
+            SqlCommand cmdNamesKnownFor = new(removeNamesKnownFor,conn,trans);
+            cmdNamesKnownFor.Parameters.AddWithValue("@id",id);
+            cmdNamesKnownFor.ExecuteNonQuery();
+
+            string remove = "delete from titles where id = @id";
+            SqlCommand cmd = new(remove,conn,trans);
+            cmd.Parameters.AddWithValue("@id",id);
+            cmd.ExecuteNonQuery();
+        }
+
+        List<object>? GetTitleTop(int count,string titleName, SqlConnection conn){
+            string q = "select distinct top(@count) primarytitle from titles where primarytitle like @titleName";
+            SqlCommand cmd = new(q,conn);
+            cmd.Parameters.AddWithValue("@count",count);
+            cmd.Parameters.AddWithValue("@titleName",$"%{titleName}%");
+
+            List<object> res = new();
+            using(SqlDataReader reader = cmd.ExecuteReader()){
+                while(reader.Read()){
+                    res.Add(reader[0]);
+                }
+            }
+            return res;
         }
     }
 }

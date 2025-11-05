@@ -37,7 +37,6 @@ const app = Vue.createApp({
         };
     },
     async created(){
-        this.getTitleTypes()
     },
 
     methods: {
@@ -165,6 +164,8 @@ const app = Vue.createApp({
 
             location.href = './actor.html?actor=' + encodedActor
         },
+        async deleteTitle(title){
+        }
     },
 });
 

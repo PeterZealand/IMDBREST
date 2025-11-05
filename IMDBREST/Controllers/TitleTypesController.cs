@@ -30,7 +30,8 @@ namespace IMDBFrontend {
                 SqlConnection sqlConn = new(conString);
                 sqlConn.Open();
 
-                string getIdFunc = "declare @typeId varchar(max); exec @typeId = GetTitleTypeId @titleTypeName = @searchTerm; select @typeId;";
+                // string getIdFunc = "declare @typeId varchar(max); exec @typeId = GetTitleTypeId @titleTypeName = @searchTerm; select @typeId;";
+                string getIdFunc = "select id from titletypes where typename = @searchTerm";
                 SqlCommand cmd = new(getIdFunc,sqlConn);
                 cmd.Parameters.AddWithValue("@searchTerm",titleName);
                 int res = Convert.ToInt32(cmd.ExecuteScalar());
