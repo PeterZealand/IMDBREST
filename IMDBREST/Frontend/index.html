@@ -19,6 +19,7 @@
         <div id="app" class="container py-4">
             <h1 class="mb-4">IMDB Search</h1>
 
+            {{titleToRemove}}
             <div class="row g-4">
                 <!-- Titles search -->
                 <div>
@@ -58,7 +59,7 @@
                                         <li v-for="(t, idx) in results.titles" :key="'t-'+idx" class="list-group-item">
                                             {{ t }}
                                             <button class="btn btn-primary" @click="getMoreInfoTitle(t)">More info</button>
-                                            <button class="btn btn-danger" @click="getMoreInfoTitle(t)">Delete</button>
+                                            <button class="btn btn-danger" @click="removeTitle(t)">Delete</button>
                                         </li>
                                     </ul>
                                 </div>

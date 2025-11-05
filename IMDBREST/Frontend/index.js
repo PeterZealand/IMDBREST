@@ -34,6 +34,7 @@ const app = Vue.createApp({
                 birhtYear:null,
                 deathYear:null,
             },
+            titleToRemove:null,
         };
     },
     async created(){
@@ -164,7 +165,19 @@ const app = Vue.createApp({
 
             location.href = './actor.html?actor=' + encodedActor
         },
-        async deleteTitle(title){
+        async removeTitle(title){
+                this.titleToRemove = title
+            if(window.confirm(`Delete '${this.titleToRemove}'?`)){
+                const getTitleIdUrl = this.buildUrl(`/api/Titles/Id?titleName=${this.titleToRemove}`)
+
+                const res = await axios.get(getTitleIdUrl)
+                console.log(res.data)
+                const deleteTitleUrl = this.buildUrl(`/api/Titles/${res.data}`)
+                const deleteRes = await axios.delete(deleteTitleUrl)
+                window.alert(`Deleted ${this.titleToRemove}`)
+                this.titleToRemove = null
+                location.reload()
+            }
         }
     },
 });

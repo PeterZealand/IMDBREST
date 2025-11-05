@@ -27,7 +27,28 @@ namespace IMDBFrontend {
             }
         }
 
-        // GET api/<IMDBController>/5
+        [HttpGet("Id")]
+        public ActionResult<List<object>> GetTitleId(string titleName) {
+            SqlConnection sqlConn = new(conString);
+            try{
+                int res = 0;
+
+                sqlConn.Open();
+                res = GetTitleId(titleName,sqlConn);
+                sqlConn.Close();
+
+                if(res != 0){
+                    return Ok(res);
+                }
+
+                return NoContent();
+            }
+            catch(SqlException){
+                sqlConn.Close();
+                return BadRequest();
+            }
+        }
+
         [HttpGet("Name")]
         public ActionResult<List<object>> Get(string titleName) {
             SqlConnection sqlConn = new(conString);
@@ -88,14 +109,9 @@ namespace IMDBFrontend {
 
                 using SqlTransaction sqlTrans = sqlConn.BeginTransaction();
 
-                // Title converted = RecordHelper.ConvertTitleRecord(value);
                 object ob = GetTitleById(id,sqlConn,sqlTrans);
                 RemoveTitle((int)ob,sqlConn,sqlTrans);
 
-                // InsertTitle(converted,sqlConn,sqlTrans);
-                //
-                // if(converted?.Genres?.Count > 0){
-                //     InsertTitleGenre(converted,sqlConn,sqlTrans);
                 sqlTrans.Commit();
 
                 return Ok(ob);
@@ -239,6 +255,14 @@ namespace IMDBFrontend {
                 }
             }
             return res;
+        }
+
+        int GetTitleId(string titleName, SqlConnection conn){
+            string q = "select id from titles where primarytitle = @titleName";
+            SqlCommand cmd = new(q,conn);
+            cmd.Parameters.AddWithValue("@titleName",titleName);
+            int titleId = Convert.ToInt32(cmd.ExecuteScalar());
+            return titleId;
         }
     }
 }
